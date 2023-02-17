@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<sub-flow name="getRoutes-TravelOnTip" doc:id="9de40312-7c60-4635-a35d-2edd1c7956fe" >
+		<ee:cache doc:name="Cache" doc:id="09daa22e-a34c-48df-97e5-d885c9dd994a" cachingStrategy-ref="Caching_Strategy">
+					<http:request method="GET" doc:name="TravelOnTip route" doc:id="876039a4-e0c3-4dcc-a380-98ca53a49f43" config-ref="HTTP_Request_configuration_TravelOnTip-SAPI" path="#[&quot;/api/&quot; ++ (vars.transportType default &quot;&quot;) ++ p('http.requester.travelOnTip.routePath')]">
+					<http:headers><![CDATA[#[output application/java
+---
+{
+	"transactionId" : vars.transactionId
+}]]]></http:headers>
+				</http:request>
+					<ee:transform doc:name="Transform Message" doc:id="31139e55-6baf-4e9b-a99f-839c5ce88ba3">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map(value,index)->{
+	"companyCode": "TravelOnTip",
+	"originLocation": {
+		"locationCode": value.departureLocationCode,
+		"locationDesc": "Beauna Vista Singapore"
+	},
+	"destinationLocation":{
+		"locationCode": value.arrivalLocationCode,
+		"locationDesc": "Klang Malaysia"
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				</ee:cache>
+	</sub-flow>
+	<sub-flow name="getRoutes-FastGo" doc:id="282d72f3-fe3c-4a8a-a0d6-658c5e45213c" >
+		<ee:cache doc:name="Cache" doc:id="803bb875-de07-447b-994d-93f1205a141f" cachingStrategy-ref="Caching_Strategy">
+					<http:request method="GET" doc:name="FastGo route" doc:id="df2c85bd-2045-4bfa-be56-e8c0c51e4de4" config-ref="HTTP_Request_configuration_FastGo-SAPI" path="#[&quot;/api/&quot; ++ (vars.transportType default &quot;&quot;) ++ p('http.requester.fastGo.routePath')]">
+					<http:headers><![CDATA[#[output application/java
+---
+{
+	"transactionId" : vars.transactionId
+}]]]></http:headers>
+				</http:request>
+					<ee:transform doc:name="Transform Message" doc:id="fad84c7f-83cf-45a1-8c6c-1c0484486c15">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map(value,index)->{
+	"companyCode": "FastGo",
+	"originLocation": {
+		"locationCode": value.departureLocationCode,
+		"locationDesc": "Beauna Vista Singapore"
+	},
+	"destinationLocation":{
+		"locationCode": value.arrivalLocationCode,
+		"locationDesc": "Klang Malaysia"
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				</ee:cache>
+	</sub-flow>
+	<sub-flow name="getRoutes-implementationSub_Flow" doc:id="f3be4e32-b2f8-4a13-999a-7aa0ac545dce" >
+		<choice doc:name="Choice" doc:id="349dae2f-158b-4456-9873-f445fc11dc80" >
+			<when expression='#[upper(vars.companyName) == "FASTGO"]'>
+				<flow-ref doc:name="getRoutes-FastGo" doc:id="403a34b8-4493-497f-916e-c637a8c7b052" name="getRoutes-FastGo" />
+			</when>
+			<when expression='#[upper(vars.companyName) == "TRAVELONTIP"]'>
+				<flow-ref doc:name="getRoutes-TravelOnTip" doc:id="1a3e5128-7fb5-4eb4-8034-4dd529b0732a" name="getRoutes-TravelOnTip" />
+			</when>
+			<otherwise>
+				<scatter-gather doc:name="Scatter-Gather" doc:id="04f323c7-0429-4a2c-ba9b-8b2472b0c6a6" >
+					<route >
+						<flow-ref doc:name="getRoutes-FastGo" doc:id="3135abce-76e1-42a7-a476-207907efed25" name="getRoutes-FastGo" />
+					</route>
+					<route >
+						<flow-ref doc:name="getRoutes-TravelOnTip" doc:id="404a7516-8025-473c-b847-5dc639d32bd0" name="getRoutes-TravelOnTip" />
+					</route>
+				</scatter-gather>
+				<ee:transform doc:name="Flatten array" doc:id="9fc8c4ca-34ae-4891-9ec6-ae17c4db7b9b">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+flatten(payload..payload)]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>
