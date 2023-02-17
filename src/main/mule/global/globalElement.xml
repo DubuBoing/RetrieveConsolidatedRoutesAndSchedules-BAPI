@@ -23,5 +23,6 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 	</http:request-config>
 	<configuration doc:name="Configuration" doc:id="fd45c7a8-9604-4305-ac68-48ce6d22f534" defaultErrorHandler-ref="globalErrorHandlerError_Handler" />
 	<os:object-store name="Object_store" doc:name="Object store" doc:id="16008d88-1391-46b8-b1c3-3a54508386df" maxEntries="1000" entryTtl="15" entryTtlUnit="MINUTES" expirationInterval="10" />
-	<ee:object-store-caching-strategy name="Caching_Strategy" doc:name="Caching Strategy" doc:id="f9bdbd04-97d5-43c4-adc0-64071317459b" keyGenerationExpression='#[vars.companyName ++ vars.transportType ++ "Routes"]' objectStore="Object_store" />
+	<ee:object-store-caching-strategy name="Route_Caching_Strategy" doc:name="Caching Strategy" doc:id="f9bdbd04-97d5-43c4-adc0-64071317459b" keyGenerationExpression='#[vars.companyName ++ vars.transportType ++ "Routes"]' objectStore="Object_store" />
+	<ee:object-store-caching-strategy name="Schedule_Caching_Strategy" doc:name="Caching Strategy" doc:id="ae080795-0841-49ae-9df7-5e2f7e112488" keyGenerationExpression='#[vars.companyName ++ vars.transportType ++ "Schedules"]' objectStore="Object_store" />
 </mule>
