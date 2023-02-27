@@ -21,7 +21,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	"departureLocation" : vars.departureLocation
 }]]]></http:query-params>
 				</http:request>
-					<ee:transform doc:name="Transform Message" doc:id="294ac123-0c47-4070-a02f-d5b62f61f798">
+					<ee:transform doc:name="LocationMapping to Standardized format" doc:id="294ac123-0c47-4070-a02f-d5b62f61f798">
 						<ee:message>
 							<ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -51,7 +51,7 @@ payload map(value,index)->{
 	"transactionId" : vars.transactionId
 }]]]></http:headers>
 				</http:request>
-					<ee:transform doc:name="Transform Message" doc:id="31139e55-6baf-4e9b-a99f-839c5ce88ba3">
+					<ee:transform doc:name="LocationMapping to Standardized format" doc:id="31139e55-6baf-4e9b-a99f-839c5ce88ba3">
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
