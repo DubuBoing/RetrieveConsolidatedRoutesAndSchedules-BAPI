@@ -25,6 +25,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 						<ee:message>
 							<ee:set-payload><![CDATA[%dw 2.0
 output application/json
+var LocationMapping = (readUrl("classpath://json/LocationCodeMapping.json","application/json"))
 ---
 payload map(value,index)->{
 	"companyCode": "FastGo",
